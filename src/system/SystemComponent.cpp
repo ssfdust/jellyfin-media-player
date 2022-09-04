@@ -9,6 +9,8 @@
 #include <QNetworkRequest>
 #include <QNetworkAccessManager>
 #include <QNetworkReply>
+#include <QCryptographicHash>
+#include <QDateTime>
 
 #include "input/InputComponent.h"
 #include "SystemComponent.h"
@@ -43,6 +45,16 @@ QMap<SystemComponent::PlatformArch, QString> g_platformArchNames = {
   { SystemComponent::platformArchUnknown, "unknown" }
 };
 
+
+/////////////////////////////////////////////////////////////////////////////////////////
+QString GetDateHash() {
+    QByteArray exchange;
+    QString datehash;
+    QDateTime now = QDateTime::currentDateTime();
+    QString datetime_str = now.toString("yyyyMMdd");
+    exchange = QCryptographicHash::hash(datetime_str.toUtf8(), QCryptographicHash::Md5);  
+    return datehash.append(exchange.toHex());
+}
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////
 SystemComponent::SystemComponent(QObject* parent) : ComponentBase(parent), m_platformType(platformTypeUnknown), m_platformArch(platformArchUnknown), m_doLogMessages(false), m_cursorVisible(true), m_scale(1)
@@ -216,7 +228,8 @@ void SystemComponent::setCursorVisibility(bool visible)
 QString SystemComponent::getUserAgent()
 {
   QString osVersion = QSysInfo::productVersion();
-  QString userAgent = QString("JellyfinMediaPlayer %1 (%2-%3 %4)").arg(Version::GetVersionString()).arg(getPlatformTypeString()).arg(getPlatformArchString()).arg(osVersion);
+  QString datehash = GetDateHash();
+  QString userAgent = QString("JellyfinMediaPlayer %1 %5 (%2-%3 %4)").arg(Version::GetVersionString()).arg(getPlatformTypeString()).arg(getPlatformArchString()).arg(osVersion).arg(datehash);
   return userAgent;
 }
 
