@@ -16,7 +16,7 @@ jobs:
       with:
         version: "5.15.2"
         modules: "qtwebengine"  
-        setup-python: 'false'
+        setup-python: 'true'
     - name: Install dependencies
       run: |
         brew update
